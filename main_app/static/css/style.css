@@ -2,7 +2,7 @@ body {
     display: flex;
     min-height: 100vh;
     flex-direction: column;
-    background-color: aqua;
+    background-color: rgb(255, 221, 241);
 }
 
 main {

@@ -1,0 +1,73 @@
+{% extends 'base.html' %} {% block content %}
+
+<h1>Finch #{{ finch.id }}</h1>
+<div class="row">
+    <div class="col s6">
+        <div class="card">
+            <div class="card-content">
+                <span class="card-title">{{ finch.name }}</span>
+                <p>Color: {{ finch.color }}</p>
+                <p>Description: {{ finch.description }}</p>
+                {% if finch.favourite_anime %}
+                <p>Favourite Anime: {{ finch.favourite_anime }}</p>
+                {% else %}
+                <p>Favourite Anime: Ghost Stories (Dub)</p>
+                {% endif %}
+            </div>
+            <div class="card-action">
+                <a href="{% url 'update' finch.id %}">Edit</a>
+                <a href="{% url 'delete' finch.id %}">Delete</a>
+            </div>
+        </div>
+    </div>
+    <div class="col s6">
+        <h4>Status: {% if finch.feeding_set.exists %}
+            {% with first_feeding=finch.feeding_set.first %}
+                {% if first_feeding.is_fed %}
+                    Satiated
+                {% else %}
+                    Hungry
+                {% endif %}
+            {% endwith %}
+            {% else %}
+                Starving
+            {% endif %}
+        </h4>
+        <form action="{% url 'add_feeding' finch.id %}" method="POST">
+            {% csrf_token %}
+            <!-- Render the inputs -->
+            {{ feeding_form.as_p }}
+            <input type="submit" class="btn" value="Add Feeding" />
+        </form>
+        <table class="striped">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Meal</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for feeding in finch.feeding_set.all %}
+                <tr>
+                    <td>{{feeding.date}}</td>
+                    <td>{{feeding.get_meal_display}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <!-- New Markup Above -->
+</div>
+<script>
+    const dateEl = document.getElementById("id_date");
+    // M is Materialize's global variable
+    M.Datepicker.init(dateEl, {
+        format: "yyyy-mm-dd",
+        defaultDate: new Date(),
+        setDefaultDate: true,
+        autoClose: true,
+    });
+    const selectEl = document.getElementById("id_meal")
+    M.FormSelect.init(selectEl)
+</script>
+{% endblock %}
