@@ -21,16 +21,17 @@
         </div>
     </div>
     <div class="col s6">
-        <h4>Status: {% if finch.feeding_set.exists %}
-            {% with first_feeding=finch.feeding_set.first %}
-                {% if first_feeding.is_fed %}
+        <h4>
+            Status: {% if finch.feeding_set.exists %} 
+            {% with first_feeding=finch.feeding_set.first %} 
+                {% if first_feeding.is_fed %} 
                     Satiated
-                {% else %}
-                    Hungry
-                {% endif %}
-            {% endwith %}
+                {% else %} 
+                    Hungry 
+                {% endif %} 
+            {% endwith %} 
             {% else %}
-                Starving
+                Starving 
             {% endif %}
         </h4>
         <form action="{% url 'add_feeding' finch.id %}" method="POST">
@@ -58,6 +59,46 @@
     </div>
     <!-- New Markup Above -->
 </div>
+
+<hr />
+<div class="row">
+    <div class="col s6">
+        <h4>{{ finch.name }}'s creator</h4>
+        {% if finch.creator_set.count %} {% for creator in finch.creator_set.all %}
+        <div class="card">
+            <div class="card-content">
+                <span class="card-title">
+                    {{ creator.name }}
+                </span>
+            </div>
+        </div>
+        {% endfor %} {% else %}
+        <h5>No creator(s)</h5>
+        {% endif %}
+    </div>
+</div>
+<div class="col s6">
+    <h3>Creators Left</h3>
+    {% if creators.count %}
+      {% for creator in creators.all %}
+        <div class="card">
+          <div class="card-content">
+            <span class="card-title">
+              {{ creator.name }}
+            </span>
+          </div>
+          <div class="card-action">
+            <form action="{% url 'associate_creator' finch.id creator.id %}" method="POST">
+              {% csrf_token %}
+              <button type="submit" class="btn">Add</button>
+            </form>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <h5>{{finch.name}} Already Has All Creators</h5>
+    {% endif %}
+  </div>
 <script>
     const dateEl = document.getElementById("id_date");
     // M is Materialize's global variable
@@ -67,7 +108,7 @@
         setDefaultDate: true,
         autoClose: true,
     });
-    const selectEl = document.getElementById("id_meal")
-    M.FormSelect.init(selectEl)
+    const selectEl = document.getElementById("id_meal");
+    M.FormSelect.init(selectEl);
 </script>
 {% endblock %}
